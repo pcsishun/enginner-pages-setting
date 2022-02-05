@@ -112,41 +112,41 @@
                                 <div class="modal-body">
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Duration flood per second:</h6></span>
-                                        <span class="set-data-modal" v-if="dutationFlood !== null"><h6>{{ dutationFlood }} sec</h6> </span>
-                                        <span class="set-data-modal" v-if="dutationFlood === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal" v-if="dutationFlood !== ''"><h6>{{ dutationFlood }} sec</h6> </span>
+                                        <span class="set-data-modal" v-if="dutationFlood === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Period flood per hours:</h6></span>
-                                        <span class="set-data-modal" v-if="periodFlood !== null"> <h6>{{ periodFlood }} hrs</h6> </span>
-                                        <span class="set-data-modal" v-if="periodFlood === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal" v-if="periodFlood !== ''"> <h6>{{ periodFlood }} hrs</h6> </span>
+                                        <span class="set-data-modal" v-if="periodFlood === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Duration Fan per second:</h6></span>
-                                        <span class="set-data-modal" v-if="dutationFan !== null"><h6>{{ dutationFan }} sec</h6> </span>
-                                        <span class="set-data-modal" v-if="dutationFan === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal" v-if="dutationFan !== ''"><h6>{{ dutationFan }} sec</h6> </span>
+                                        <span class="set-data-modal" v-if="dutationFan === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Period Fan per hours:</h6></span>
-                                        <span class="set-data-modal" v-if="periodFan !== null"><h6>{{ periodFan }} hrs</h6> </span>
-                                        <span class="set-data-modal" v-if="periodFan === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal" v-if="periodFan !== ''"><h6>{{ periodFan }} hrs</h6> </span>
+                                        <span class="set-data-modal" v-if="periodFan === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Duration light per second:</h6></span>
-                                        <span class="set-data-modal" v-if="dutationLight !== null"><h6>{{ dutationLight }} sec</h6> </span>
-                                        <span class="set-data-modal" v-if="dutationLight === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal" v-if="dutationLight !== ''"><h6>{{ dutationLight }} sec</h6> </span>
+                                        <span class="set-data-modal" v-if="dutationLight === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Period light per hours:</h6></span>
-                                        <span class="set-data-modal" v-if="periodLight !== null"><h6>{{ periodLight }} hrs</h6> </span>
-                                         <span class="set-data-modal" v-if="periodLight === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal" v-if="periodLight !== ''"><h6>{{ periodLight }} hrs</h6> </span>
+                                         <span class="set-data-modal" v-if="periodLight === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                     <div class="set-content-modal">
                                         <span class="set-label-modal"><h6>Light brightness</h6></span>
-                                        <span class="set-data-modal"  v-if="percentOfBrightness !== null"><h6>{{ percentOfBrightness }} %</h6> </span>
-                                        <span class="set-data-modal" v-if="percentOfBrightness === null"><h6 style="color: red">{{ isNullMsg }}</h6> </span>
+                                        <span class="set-data-modal"  v-if="percentOfBrightness !== ''"><h6>{{ percentOfBrightness }} % or color {{ convertPercent }}</h6> </span>
+                                        <span class="set-data-modal" v-if="percentOfBrightness === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
                                 </div>
-                                <div class="error-msg" v-if="errorMsg !== null">
+                                <div class="error-msg" v-if="errorMsg !== ''">
                                     <h4>{{ errorMsg }}</h4>
                                 </div>
                                 <hr>
@@ -173,31 +173,35 @@
 export default {
     data(){
         return{
-            dutationFlood: null,
-            periodFlood: null,
-            dutationFan: null,
-            periodFan:null,
-            dutationLight: null,
-            periodLight: null,
-            percentOfBrightness: null,
-            isNullMsg: "Empty value!",
-            errorMsg: null
+            dutationFlood: '',
+            periodFlood: '',
+            dutationFan: '',
+            periodFan:'',
+            dutationLight: '',
+            periodLight: '',
+            percentOfBrightness: '',
+            convertPercent:'',
+            emptyMsg: "Empty value!",
+            errorMsg: '',
+            isFirstTime: true
         }
 
     },
     methods:{
         haddleUpdate(){
-            console.log(this.percentOfBrightness)
+            this.convertPercent = (this.percentOfBrightness / 100) * 255
+            this.errorMsg = ""
         },
         sendSetting(){
-            if(this.dutationFlood === null || this.periodFlood === null || this.dutationFan === null || this.periodFan || this.dutationLight === null || this.percentOfBrightness === null){
+            if(this.dutationFlood === '' || this.periodFlood === '' || this.dutationFan === '' || this.periodFan === '' || this.dutationLight === '' || this.periodLight === '' || this.percentOfBrightness === ''){
                 this.errorMsg = "All value must not be empty!"
             }else{
+
                 alert('Update')
             }
         },
         haddleLogout(){
-            this.$root.state.isLogin = null,
+            this.$root.state.isLogin = '',
             this.$router.push('./')
         }
     },
