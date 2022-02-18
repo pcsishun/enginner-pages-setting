@@ -17,7 +17,7 @@
                     </div>
                     <div class="btn-login">
                         <button class="btn btn-primary" @click="haddleLogin">Login</button>
-                        <button class="btn btn-primary" @click="haddleForgot">Forgot</button>
+                        <!-- <button class="btn btn-primary" @click="haddleForgot">Forgot</button> -->
                     </div>
                 </div>
             </div>
@@ -27,6 +27,8 @@
 
 <script>
 // import nodemailer from 'nodemailer';
+import axios from 'axios';
+import Cookies from 'js-cookie'
 
 export default {
     data(){
@@ -38,20 +40,37 @@ export default {
         }
     },
     methods:{
-        haddleLogin(){
-            if(this.isUsername !== this.$root.state.username && this.isPassword !== this.$root.state.password){
+        async haddleLogin(){
+            if(this.isUsername !== this.$root.state.username || this.isPassword !== this.$root.state.password){
                 this.isError = true,
                 this.errorText = "invalid username or password"
             }
             else{
+                const headerConfig = {
+                    header:{
+                        'Content-Type': 'application/json'
+                        }
+                }
+
+                const adminUser = {
+                    username: this.isUsername,
+                    password: this.isPassword
+                }
+
+                const objectToken = await axios.post("http://localhost:3030/login", adminUser, headerConfig)
+                const isToken = JSON.stringify(objectToken)
+
+                Cookies.set("tai_token_eng", isToken, {expires: 0.1})
+
+            
                 this.isError = false
                 this.errorText = null
                 this.$root.state.isLogin = true
                 this.$router.push('./config')
             }
         },
-        haddleForgot(){
-            alert('in maintance')
+        // haddleForgot(){
+        //     alert('in maintance')
 
             // const setEmailAdmin = nodemailer.createTransport({
             //     service: "gmail",
@@ -75,7 +94,7 @@ export default {
             //         alert("email have alreadly send please check email admin info responsive: "+ info.response)
             //     }
             // })
-        }
+        // }
     }
 }
 </script>

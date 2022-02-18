@@ -101,6 +101,23 @@
                 </div>
                 <hr>
                 <div class="on-setting-container">
+                    <div class="set-title">
+                        <h5>IP config:</h5>
+                    </div>
+                    <div class="set-setting-ip">
+                        <div class="setting-content">
+                            <div class="setting-duration-ip">
+                                <label><h6>Setting ip to fodder:</h6></label>
+                            </div>
+                            <div class="setting-period-ip">
+                                <input class="set-input" v-model="isIpconfig" />
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <hr>
+                <div class="on-setting-container">
                     <button type="button" class="btn btn-primary" @click="haddleUpdate" data-toggle="modal" data-target="#modal-notic">update</button>
                 
                     <div class="modal fade" id="modal-notic" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -145,6 +162,10 @@
                                         <span class="set-data-modal"  v-if="percentOfBrightness !== ''"><h6>{{ percentOfBrightness }} % or color {{ convertPercent }}</h6> </span>
                                         <span class="set-data-modal" v-if="percentOfBrightness === ''"><h6 style="color: red">{{ emptyMsg }}</h6> </span>
                                     </div>
+                                    <div class="set-content-modal">
+                                        <span class="set-label-modal"><h6>ipconfig:</h6></span>
+                                        <span class="set-data-modal" ><h6>{{ isIpconfig }}</h6> </span>
+                                    </div>
                                 </div>
                                 <div class="error-msg" v-if="errorMsg !== ''">
                                     <h4>{{ errorMsg }}</h4>
@@ -170,6 +191,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import Cookies from 'js-cookie'
+
 export default {
     data(){
         return{
@@ -183,6 +207,7 @@ export default {
             convertPercent:'',
             emptyMsg: "Empty value!",
             errorMsg: '',
+            isIpconfig: '',
             isFirstTime: true
         }
 
@@ -192,12 +217,46 @@ export default {
             this.convertPercent = (this.percentOfBrightness / 100) * 255
             this.errorMsg = ""
         },
-        sendSetting(){
+        async sendSetting(){
             if(this.dutationFlood === '' || this.periodFlood === '' || this.dutationFan === '' || this.periodFan === '' || this.dutationLight === '' || this.periodLight === '' || this.percentOfBrightness === ''){
-                this.errorMsg = "All value must not be empty!"
+                this.errorMsg = "All value must not be empty except ipconfig!"
             }else{
+                const tokenAdmin  = Cookies.get('tai_token_eng')
+ 
+                const headerConfig = {
+                    header:{
+                        'Content-Type': 'application/json',
+                        'access-token': tokenAdmin
+                    }
+                }
+                
+                const sendingData = {
+                    dutationFlood: this.dutationFlood,
+                    periodFlood: this.periodFlood,
+                    dutationFan: this.dutationFan,
+                    periodFan: this.periodFan,
+                    dutationLight: this.dutationLight,
+                    periodLight: this.periodLight,
+                    percentOfBrightness: this.percentOfBrightness,
+                    color: this.convertPercent,
+                    isIpconfig: this.isIpconfig
+                }
 
-                alert('Update')
+                await axios.post("http://localhost:3030/sendingconfig",sendingData, headerConfig)
+                .then(res => {
+                    console.log(res.data)
+                    console.log(sendingData)
+                    alert("Success update")
+                    alert("automatic logout")
+                    this.$router.push('/')
+
+                })
+                .catch(err => {
+                    alert("error: "+ err)
+                })
+
+                // console.log(sendingData)
+                // alert('Update')
             }
         },
         haddleLogout(){
@@ -226,6 +285,7 @@ export default {
 .set-config-title > h4 > span{
     margin-left:10px;
 }
+ 
 .config-body-container{
     width: 70%;
     margin: auto;
@@ -241,6 +301,16 @@ export default {
 .set-setting{
     margin-top: 30px;
 }
+.set-setting-ip{
+    width: 60%;
+    margin: auto;
+    padding-right: 2rem;
+ 
+}
+.setting-period-ip{
+    width: 170%;
+}
+
 .setting-content{
     display: grid;
     grid-template-columns: 1fr 1fr;
