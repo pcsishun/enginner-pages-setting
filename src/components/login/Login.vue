@@ -29,6 +29,7 @@
 // import nodemailer from 'nodemailer';
 import axios from 'axios';
 import Cookies from 'js-cookie'
+// import bcrypt from 'bcrypt'
 
 export default {
     data(){
@@ -46,6 +47,8 @@ export default {
                 this.errorText = "invalid username or password"
             }
             else{
+                // const saltRounds = 16; 
+                // const hashingPassword = bcrypt.hash(this.isPassword, saltRounds)
                 const headerConfig = {
                     header:{
                         'Content-Type': 'application/json'
@@ -54,19 +57,26 @@ export default {
 
                 const adminUser = {
                     username: this.isUsername,
-                    password: this.isPassword
+                    hashPassword: this.isPassword
                 }
 
                 const objectToken = await axios.post("http://localhost:3030/login", adminUser, headerConfig)
-                const isToken = JSON.stringify(objectToken)
+                const isToken = JSON.stringify(objectToken.data.token)
+                
+                // console.log(isToken)
 
-                Cookies.set("tai_token_eng", isToken, {expires: 0.1})
+                if (isToken){
+                    Cookies.set("tai_token_eng", isToken, {expires: 0.1})
+                    this.isError = false
+                    this.errorText = null
+                    this.$root.state.isLogin = true
+                    this.$router.push('./config')
+                }else{
+                    this.isError = true
+                    this.errorText = isToken.token
+                }
 
-            
-                this.isError = false
-                this.errorText = null
-                this.$root.state.isLogin = true
-                this.$router.push('./config')
+
             }
         },
         // haddleForgot(){
